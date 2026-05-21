@@ -94,33 +94,48 @@ preflight_checks() {
   msg_ok "Preflight checks passed"
 }
 
+# -- OS Selection --------------------------------------------------------------
+select_os() {
+  OS_VERSION=$(dialog --title "Ubuntu Release" \
+    --menu "Choose the Ubuntu release for this container:" 13 60 4 \
+    "26.04" "Ubuntu 26.04 LTS (newest LTS, recommended)" \
+    "24.04" "Ubuntu 24.04 LTS (mature, well-tested)" \
+    "25.04" "Ubuntu 25.04 (interim, 9-month support)" \
+    3>&1 1>&2 2>&3) || exit 1
+
+  msg_ok "Ubuntu release: ${OS_VERSION}"
+}
+
 # -- Template Download ---------------------------------------------------------
+# Args: $1 = storage pool, $2 = OS version (e.g. "26.04", "24.04", "25.04")
 ensure_template() {
   local TEMPLATE_STORAGE="$1"
-  local TEMPLATE_NAME="ubuntu-24.04-standard_24.04-2_amd64.tar.zst"
+  local OS_VERSION="$2"
+  local OS_REGEX="ubuntu-${OS_VERSION//./\\.}-standard"
+  local TEMPLATE_NAME
   local TEMPLATE_PATH
 
   # Check common template locations
-  TEMPLATE_PATH=$(pveam list "$TEMPLATE_STORAGE" 2>/dev/null | grep -oP "ubuntu-24\.04-standard.*\.tar\.(zst|gz)" | head -1 || true)
+  TEMPLATE_PATH=$(pveam list "$TEMPLATE_STORAGE" 2>/dev/null | grep -oP "${OS_REGEX}.*\.tar\.(zst|gz)" | head -1 || true)
 
   if [[ -z "$TEMPLATE_PATH" ]]; then
     # All status messages go to stderr so stdout stays clean for the caller
-    msg_info "Downloading Ubuntu 24.04 LTS template..." >&2
+    msg_info "Downloading Ubuntu ${OS_VERSION} template..." >&2
     pveam update >/dev/null 2>&1
 
     # Find the exact template name available
-    TEMPLATE_NAME=$(pveam available --section system 2>/dev/null | grep -oP "ubuntu-24\.04-standard.*\.tar\.(zst|gz)" | head -1 || true)
+    TEMPLATE_NAME=$(pveam available --section system 2>/dev/null | grep -oP "${OS_REGEX}.*\.tar\.(zst|gz)" | head -1 || true)
 
     if [[ -z "$TEMPLATE_NAME" ]]; then
-      msg_error "Ubuntu 24.04 template not found in available templates." >&2
-      msg_error "Run 'pveam available --section system | grep ubuntu-24' to check." >&2
+      msg_error "Ubuntu ${OS_VERSION} template not found in available templates." >&2
+      msg_error "Run 'pveam available --section system | grep ubuntu-${OS_VERSION}' to check." >&2
       exit 1
     fi
 
     pveam download "$TEMPLATE_STORAGE" "$TEMPLATE_NAME" >/dev/null 2>&1
     msg_ok "Template downloaded: $TEMPLATE_NAME" >&2
   else
-    TEMPLATE_NAME="$TEMPLATE_PATH"
+    TEMPLATE_NAME=$(basename "$TEMPLATE_PATH")
     msg_ok "Template found: $TEMPLATE_NAME" >&2
   fi
 
@@ -287,7 +302,7 @@ configure_advanced() {
 # -- Build the Container -------------------------------------------------------
 build_container() {
   local TEMPLATE_REF
-  TEMPLATE_REF=$(ensure_template "$TEMPLATE_STORAGE")
+  TEMPLATE_REF=$(ensure_template "$TEMPLATE_STORAGE" "$OS_VERSION")
 
   msg_info "Creating LXC container ${CT_ID} (${CT_HOSTNAME})..."
 
@@ -501,6 +516,7 @@ main() {
   header_info
   preflight_checks
   select_storage
+  select_os
 
   # Simple vs Advanced mode selection
   local MODE
@@ -519,6 +535,7 @@ main() {
   local CONFIRM_TEXT="Create OpenClaw LXC with these settings?\n\n"
   CONFIRM_TEXT+="  Container ID:  ${CT_ID}\n"
   CONFIRM_TEXT+="  Hostname:      ${CT_HOSTNAME}\n"
+  CONFIRM_TEXT+="  OS:            Ubuntu ${OS_VERSION}\n"
   CONFIRM_TEXT+="  CPU Cores:     ${CT_CPU}\n"
   CONFIRM_TEXT+="  RAM:           ${CT_RAM} MB\n"
   CONFIRM_TEXT+="  Disk:          ${CT_DISK} GB\n"

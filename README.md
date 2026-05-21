@@ -11,13 +11,13 @@ Deployment scripts and templates for personal AI agents. Spin up a fully-configu
 
 ## Quick start
 
-### Proxmox host (unified menu — coming Phase 2)
+### Proxmox host (unified menu)
 
 ```bash
 bash -c "$(curl -fsSL pveAI.ivantsov.tech)"
 ```
 
-Dialog menu picks the bot (OpenClaw / Hermes / Standard LXC), the Ubuntu release (26.04 LTS / 24.04 LTS / 25.04), and the container settings. Standard mode just provisions the LXC and stops — useful as a quick LXC factory.
+Dialog menu picks the container type (OpenClaw / Hermes / Standard LXC), the Ubuntu release (26.04 LTS / 24.04 LTS / 25.04), and the sizing. Standard mode adds a feature checkbox (nesting / tun) and provisions the LXC without installing anything — useful as a quick LXC factory. Hermes path creates the container and exits (Phase 3 will add the full install).
 
 ### Bot-specific entrypoints
 
@@ -55,8 +55,8 @@ agentfarm/
 │   ├── reset.sh
 │   └── templates/
 ├── hermes/              # Hermes bot (Phase 3)
-├── proxmox/             # Unified PVE helper (Phase 2)
-│   └── pve-helper.sh
+├── proxmox/             # Unified PVE helper
+│   └── pve-helper.sh    # bot-type menu + OS picker + LXC factory
 └── IDEAS.md             # repo-scoped backlog
 ```
 

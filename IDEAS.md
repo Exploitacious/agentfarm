@@ -5,7 +5,7 @@ Repo-scoped backlog. Cluster-wide ideas live in `~/COWORK/PROJECTS/Exploitacious
 ## Phase tracker
 
 - **Phase 1 (done — 2026-05-21):** Renamed `OpenClaw` → `agentfarm`. Restructured into `openclaw/` subdir, dropped `openclaw-` prefix on filenames. Top-level umbrella README. `projects-map.md` updated.
-- **Phase 2 (next):** Unified `proxmox/pve-helper.sh` with menu (OpenClaw / Hermes / Standard-no-install) + Ubuntu OS picker (26.04 / 24.04 / 25.04). DNS: add `pveAI.ivantsov.tech` → unified menu.
+- **Phase 2 (done — 2026-05-21):** Unified `proxmox/pve-helper.sh` shipped — bot-type menu (OpenClaw / Hermes stub / Standard) + Ubuntu OS picker (26.04 LTS / 24.04 LTS / 25.04) + Standard-mode feature checkboxes (nesting / tun). `openclaw/proxmox.sh` also got the OS picker for standalone use. Pending: DNS — add `pveAI.ivantsov.tech` → `proxmox/pve-helper.sh` raw URL.
 - **Phase 3:** Hermes pack (`hermes/install.sh`, `hermes/postinstall.sh`, `hermes/reset.sh`, templates). Mirror OpenClaw structure but thinner — upstream `hermes setup` does heavy lifting. Same Tailscale + cgroup pattern. Daily backup cron (Hermes ships none). DNS: `pveHermes.ivantsov.tech` + `setupHermes.ivantsov.tech`.
 - **Phase 4:** DNS + docs sync, live test deploy.
 
