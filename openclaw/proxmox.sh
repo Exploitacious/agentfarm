@@ -13,7 +13,7 @@
 set -euo pipefail
 
 # -- Remote repo base URL (for curl|bash mode) --------------------------------
-REPO_RAW="https://raw.githubusercontent.com/Exploitacious/OpenClaw/refs/heads/master"
+REPO_RAW="https://raw.githubusercontent.com/Exploitacious/agentfarm/refs/heads/master"
 
 # -- Error trap (cleanup on failure) -------------------------------------------
 cleanup_on_error() {
@@ -57,7 +57,7 @@ header_info() {
   \____/ .___/\___/_/ /_/ \____/_/\__,_/ |__/|__/
       /_/
          Proxmox LXC Helper Script
-      github.com/Exploitacious/OpenClaw
+      github.com/Exploitacious/agentfarm
 
 EOF
 }
@@ -428,10 +428,10 @@ run_install() {
   trap "rm -rf ${STAGE_DIR}" EXIT
 
   # -- Resolve install script --------------------------------------------------
-  local LOCAL_INSTALL="${SCRIPT_DIR:+${SCRIPT_DIR}/}openclaw-install.sh"
-  resolve_file "openclaw-install.sh" \
+  local LOCAL_INSTALL="${SCRIPT_DIR:+${SCRIPT_DIR}/}install.sh"
+  resolve_file "install.sh" \
     "$LOCAL_INSTALL" \
-    "${REPO_RAW}/openclaw-install.sh" \
+    "${REPO_RAW}/openclaw/install.sh" \
     "${STAGE_DIR}/openclaw-install.sh" \
     || exit 1
   chmod +x "${STAGE_DIR}/openclaw-install.sh"
@@ -446,7 +446,7 @@ run_install() {
     local LOCAL_TPL="${SCRIPT_DIR:+${SCRIPT_DIR}/templates/}${tpl}"
     local STAGED="${STAGE_DIR}/${tpl}"
 
-    if resolve_file "$tpl" "$LOCAL_TPL" "${REPO_RAW}/templates/${tpl}" "$STAGED"; then
+    if resolve_file "$tpl" "$LOCAL_TPL" "${REPO_RAW}/openclaw/templates/${tpl}" "$STAGED"; then
       # Validate JSON template syntax before pushing
       if [[ "$tpl" == "openclaw.json.tpl" ]]; then
         if ! jq empty < "$STAGED" >/dev/null 2>&1; then
@@ -486,7 +486,7 @@ print_summary() {
   echo -e "    1. Reboot:   ${YW}pct reboot ${CT_ID}${CL}"
   echo "    2. SSH in:   ssh claw@${CT_IPADDR}  (password: openclaw)"
   echo -e "    3. Password: ${RD}passwd${CL}  (change immediately)"
-  echo -e "    4. Wizard:   ${GN}bash ~/OpenClaw/openclaw-postinstall.sh${CL}"
+  echo -e "    4. Wizard:   ${GN}bash ~/agentfarm/openclaw/postinstall.sh${CL}"
   echo ""
   echo "  The wizard handles AI providers, model config, API keys,"
   echo "  Telegram bot, Tailscale auth, and launches the TUI to hatch."

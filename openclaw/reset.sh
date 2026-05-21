@@ -8,8 +8,8 @@
 # Re-applies templates from the helper repo and launches onboard to re-hatch.
 #
 # Usage:
-#   Interactive:  bash ~/OpenClaw/openclaw-reset.sh
-#   Scripted:     bash ~/OpenClaw/openclaw-reset.sh --confirm --skip-hatch
+#   Interactive:  bash ~/agentfarm/openclaw/reset.sh
+#   Scripted:     bash ~/agentfarm/openclaw/reset.sh --confirm --skip-hatch
 # =============================================================================
 
 set -euo pipefail
@@ -40,7 +40,7 @@ OC_CONFIG="${OC_DIR}/openclaw.json"
 OC_ENV="${OC_DIR}/.env"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TEMPLATE_DIR="${SCRIPT_DIR}/templates"
-REPO_RAW="https://raw.githubusercontent.com/Exploitacious/OpenClaw/main"
+REPO_RAW="https://raw.githubusercontent.com/Exploitacious/agentfarm/refs/heads/master"
 
 # -- Parse flags ---------------------------------------------------------------
 CONFIRMED=false
@@ -55,7 +55,7 @@ while [[ $# -gt 0 ]]; do
     --keep-soul)     KEEP_SOUL=true; shift ;;
     --full)          FULL_RESET=true; shift ;;
     --help|-h)
-      echo "Usage: bash openclaw-reset.sh [OPTIONS]"
+      echo "Usage: bash reset.sh [OPTIONS]"
       echo ""
       echo "Options:"
       echo "  --confirm       Skip confirmation prompt"
@@ -95,7 +95,7 @@ resolve_template() {
   local NAME="$1"
   if [[ -f "${TEMPLATE_DIR}/${NAME}" ]]; then
     cat "${TEMPLATE_DIR}/${NAME}"
-  elif curl -fsSL "${REPO_RAW}/templates/${NAME}" 2>/dev/null; then
+  elif curl -fsSL "${REPO_RAW}/openclaw/templates/${NAME}" 2>/dev/null; then
     : # curl already output to stdout
   else
     msg_error "Cannot resolve template: ${NAME}"
@@ -435,7 +435,7 @@ if $SKIP_HATCH; then
 
   msg_info "Skipped hatching. When ready:"
   echo ""
-  echo -e "  ${BL}bash ~/OpenClaw/openclaw-postinstall.sh${CL}   (recommended — handles everything)"
+  echo -e "  ${BL}bash ~/agentfarm/openclaw/postinstall.sh${CL}   (recommended — handles everything)"
   echo ""
   echo -e "  ${DM}Or manually:${CL}"
   echo -e "  ${BL}cp ${BOOTSTRAP_TEMPLATE} ~/.openclaw/workspace/BOOTSTRAP.md${CL}"

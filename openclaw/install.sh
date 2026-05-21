@@ -15,7 +15,7 @@
 set -euo pipefail
 
 # -- Remote repo base URL (for standalone curl|bash mode) ----------------------
-REPO_RAW="${REPO_RAW:-https://raw.githubusercontent.com/Exploitacious/OpenClaw/refs/heads/master}"
+REPO_RAW="${REPO_RAW:-https://raw.githubusercontent.com/Exploitacious/agentfarm/refs/heads/master}"
 
 # -- Logging (all output also goes to log file for debugging) ------------------
 LOGFILE="/tmp/openclaw-install.log"
@@ -58,7 +58,7 @@ resolve_template() {
 
   # Try fetching from GitHub
   msg_info "Fetching ${TPL_NAME} from GitHub..."
-  if curl -fsSL "${REPO_RAW}/templates/${TPL_NAME}" -o "$DEST" 2>/dev/null; then
+  if curl -fsSL "${REPO_RAW}/openclaw/templates/${TPL_NAME}" -o "$DEST" 2>/dev/null; then
     msg_ok "Downloaded ${TPL_NAME}"
     return 0
   else
@@ -310,7 +310,7 @@ step_apply_templates() {
   # would bypass the "Wake up, my friend..." first-contact experience.
   #
   # Our agents.md.tpl (prompt injection defense, sub-agent delegation) is stored
-  # in ~/OpenClaw/templates/ and can be appended to AGENTS.md AFTER hatching
+  # in ~/agentfarm/openclaw/templates/ and can be appended to AGENTS.md AFTER hatching
   # via the post-install wizard's finalize step.
 
   # NOTE: USER.md is NOT created here either. Any file in the workspace
@@ -334,7 +334,7 @@ step_install_memory() {
   # "Wake up, my friend..." hatching dialogue never fires.
   #
   # The memory-lancedb-hybrid plugin is installed by the post-install wizard
-  # (openclaw-postinstall.sh) AFTER the bot has been hatched.
+  # (openclaw/postinstall.sh) AFTER the bot has been hatched.
 
   msg_info "Memory plugin will be installed after hatching (post-install wizard)"
   msg_dim "This prevents workspace content from blocking the hatching process"
@@ -436,18 +436,18 @@ alias openclaw-backup="${HOME}/bin/backup-openclaw.sh"'
   fi
 
   # -- Clone helper repo (for postinstall wizard and future updates) -----------
-  if [[ ! -d "${CLAW_HOME}/OpenClaw" ]]; then
-    msg_info "Cloning OpenClaw helper repo..."
+  if [[ ! -d "${CLAW_HOME}/agentfarm" ]]; then
+    msg_info "Cloning agentfarm helper repo..."
     sudo -u "$CLAW_USER" git clone -q \
-      https://github.com/Exploitacious/OpenClaw.git \
-      "${CLAW_HOME}/OpenClaw" 2>/dev/null || {
+      https://github.com/Exploitacious/agentfarm.git \
+      "${CLAW_HOME}/agentfarm" 2>/dev/null || {
         msg_warn "Repo clone failed. Post-install wizard can be fetched manually."
-        msg_warn "Run: git clone https://github.com/Exploitacious/OpenClaw.git ~/OpenClaw"
+        msg_warn "Run: git clone https://github.com/Exploitacious/agentfarm.git ~/agentfarm"
       }
-    msg_ok "Helper repo cloned to ~/OpenClaw (includes post-install wizard)"
+    msg_ok "Helper repo cloned to ~/agentfarm (includes post-install wizard)"
   else
-    msg_info "Updating existing OpenClaw helper repo..."
-    sudo -u "$CLAW_USER" bash -c "cd ${CLAW_HOME}/OpenClaw && git pull -q" 2>/dev/null || true
+    msg_info "Updating existing agentfarm helper repo..."
+    sudo -u "$CLAW_USER" bash -c "cd ${CLAW_HOME}/agentfarm && git pull -q" 2>/dev/null || true
     msg_ok "Helper repo updated"
   fi
 }
@@ -526,13 +526,13 @@ step_validate() {
   echo -e "     ${BL}passwd${CL}"
   echo ""
   echo -e "  4. ${GN}Run the post-install wizard (sets up everything else):${CL}"
-  echo -e "     ${BL}bash ~/OpenClaw/openclaw-postinstall.sh${CL}"
+  echo -e "     ${BL}bash ~/agentfarm/openclaw/postinstall.sh${CL}"
   echo ""
   echo -e "     The wizard handles: AI providers, model selection, embeddings key,"
   echo -e "     Telegram bot token, Tailscale auth, and agent personality."
   echo ""
   echo -e "     Or do it all in one shot:"
-  echo -e "     ${BL}bash ~/OpenClaw/openclaw-postinstall.sh \\${CL}"
+  echo -e "     ${BL}bash ~/agentfarm/openclaw/postinstall.sh \\${CL}"
   echo -e "     ${BL}  --provider anthropic-api-key --provider-key sk-ant-... \\${CL}"
   echo -e "     ${BL}  --openai-key sk-... \\${CL}"
   echo -e "     ${BL}  --telegram-token 123456:ABC... \\${CL}"

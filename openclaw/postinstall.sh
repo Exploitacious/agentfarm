@@ -3,12 +3,12 @@
 # =============================================================================
 # OpenClaw Post-Install Wizard
 #
-# Run after openclaw-install.sh to complete setup interactively or via flags.
+# Run after openclaw/install.sh to complete setup interactively or via flags.
 # Handles: AI providers, embeddings key, Telegram bot, Tailscale, onboarding.
 #
 # Usage:
-#   Interactive:  bash openclaw-postinstall.sh
-#   Scripted:     bash openclaw-postinstall.sh \
+#   Interactive:  bash postinstall.sh
+#   Scripted:     bash postinstall.sh \
 #                   --provider opencode-go --provider-key sk-... \
 #                   --primary-model opencode-go/kimi-k2.5 \
 #                   --fallback-models "opencode-go/minimax-m2.7, opencode-go/glm-5" \
@@ -109,7 +109,7 @@ while [[ $# -gt 0 ]]; do
     --non-interactive)    NON_INTERACTIVE=true; shift ;;
     -h|--help)
       cat <<'USAGE'
-Usage: openclaw-postinstall.sh [OPTIONS]
+Usage: postinstall.sh [OPTIONS]
 
 AI Providers (repeatable):
   --provider <choice>       Provider auth-choice (e.g. anthropic-api-key, ollama,
@@ -251,7 +251,7 @@ msg_ok "OpenClaw $(openclaw --version 2>&1 | head -1) detected"
 
 if [[ ! -f "$OC_CONFIG" ]]; then
   msg_error "Config not found at $OC_CONFIG"
-  msg_info "Run the install script first: bash openclaw-install.sh"
+  msg_info "Run the install script first: bash ~/agentfarm/openclaw/install.sh"
   exit 1
 fi
 msg_ok "Config file found"
@@ -293,7 +293,7 @@ step_ai_providers() {
       # Codex OAuth requires interactive mode — can't do it via flags
       if [[ "$choice" == "openai-codex" ]]; then
         msg_warn "openai-codex uses OAuth and requires interactive mode. Skipping."
-        msg_info "Run interactively: bash ~/OpenClaw/openclaw-postinstall.sh"
+        msg_info "Run interactively: bash ~/agentfarm/openclaw/postinstall.sh"
         continue
       fi
 
@@ -370,7 +370,7 @@ step_ai_providers() {
 
       if $NON_INTERACTIVE; then
         msg_warn "OAuth requires interactive mode. Skipping Codex registration."
-        msg_info "Run interactively later: bash ~/OpenClaw/openclaw-postinstall.sh"
+        msg_info "Run interactively later: bash ~/agentfarm/openclaw/postinstall.sh"
         echo ""
         continue
       fi
