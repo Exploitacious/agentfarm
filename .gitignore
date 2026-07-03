@@ -1,2 +1,35 @@
+# --- Secrets: NEVER commit (this is a PUBLIC repo) ---
+.env
+.env.*
+*.env
+!*.env.example
+!*.env.template
+*.key
+*.pem
+*_rsa
+*_ed25519
+id_ed25519*
+id_rsa*
+*.p12
+*.pfx
+auth.json
+authorized_keys
+# tailscale / provider auth material sometimes dropped during local testing
+tskey-*
+*.authkey
+
+# Filled-in / live agent config that could carry real values or a real persona
+config.live.yaml
+*.live.yaml
+SOUL.md
+!templates/**/SOUL.md.example
+
+# --- Tooling / OS noise ---
 .claude
+.DS_Store
 *.log
+*.bak
+*.bak.*
+*.swp
+__pycache__/
+node_modules/

@@ -88,7 +88,7 @@ bash ~/agentfarm/openclaw/postinstall.sh \
   --heartbeat-model opencode-go/minimax-m2.5 \
   --openai-key sk-... \
   --telegram-token 123456:ABCdef... \
-  --telegram-user-id 5361915599 \
+  --telegram-user-id 123456789 \
   --tailscale-auth-key tskey-auth-... \
   --non-interactive
 ```
